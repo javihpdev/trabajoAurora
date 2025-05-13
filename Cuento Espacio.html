@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Cuento Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const paginas = document.querySelectorAll(".pagina");
+        const botonAnterior = document.getElementById("anterior");
+        const botonSiguiente = document.getElementById("siguiente");
+        let paginaActual = 0;
+        let sonidoReproduciendo = null;
+
+        function mostrarPagina(indice) {
+          if (indice >= 0 && indice < paginas.length) {
+            // Pausar cualquier sonido que esté reproduciéndose al cambiar de página
+            if (sonidoReproduciendo) {
+              sonidoReproduciendo.pause();
+              sonidoReproduciendo.currentTime = 0;
+              sonidoReproduciendo = null;
+            }
+
+            paginas.forEach((pagina, i) => {
+              pagina.classList.remove("visible");
+              if (i === indice) {
+                pagina.classList.add("visible");
+              }
+            });
+            paginaActual = indice;
+          }
+        }
+
+        if (botonAnterior) {
+          botonAnterior.addEventListener("click", () => {
+            mostrarPagina(paginaActual - 1);
+          });
+        }
+
+        if (botonSiguiente) {
+          botonSiguiente.addEventListener("click", () => {
+            mostrarPagina(paginaActual + 1);
+          });
+        }
+
+        mostrarPagina(0);
+
+        // Reproducción y pausa de sonido al hacer clic en la imagen visible
+        document.addEventListener("click", (event) => {
+          const paginaVisible = document.querySelector(".pagina.visible");
+          if (paginaVisible) {
+            const imagen = paginaVisible.querySelector(".imagen-con-sonido");
+            if (imagen && event.target === imagen) {
+              const sonidoSrc = imagen.getAttribute("data-sonido");
+              if (sonidoSrc) {
+                const audioId = `sonido-${imagen.id || paginaVisible.id}`;
+                let audio = document.getElementById(audioId);
+                if (!audio) {
+                  audio = document.createElement("audio");
+                  audio.id = audioId;
+                  audio.src = sonidoSrc;
+                  document.body.appendChild(audio);
+                }
+
+                if (sonidoReproduciendo === audio && !audio.paused) {
+                  audio.pause();
+                  sonidoReproduciendo = null;
+                } else {
+                  if (sonidoReproduciendo && sonidoReproduciendo !== audio) {
+                    sonidoReproduciendo.pause();
+                    sonidoReproduciendo.currentTime = 0;
+                  }
+                  audio.currentTime = 0;
+                  audio.play();
+                  sonidoReproduciendo = audio;
+                }
+              }
+            }
+          }
+        });
+      });
+    </script>
+    <style>
+      body {
+        margin: 0; /* Elimina el margen predeterminado del body */
+        overflow: hidden; /* Evita las barras de desplazamiento */
+      }
+      .pagina {
+        display: none;
+        position: fixed; /* Fija las páginas para que ocupen toda la ventana */
+        top: 0;
+        left: 0;
+        width: 100%; /* Ocupa todo el ancho de la ventana */
+        height: 100%; /* Ocupa toda la altura de la ventana */
+        justify-content: center; /* Centra el contenido horizontalmente */
+        align-items: center; /* Centra el contenido verticalmente */
+        flex-direction: column; /* Alinea los elementos verticalmente */
+        background-color: #f7fafc; /* Un fondo claro para las páginas */
+      }
+      .pagina.visible {
+        display: flex;
+      }
+      .imagen-con-sonido {
+        max-width: 100%; /* La imagen ocupa todo el ancho disponible */
+        max-height: 90%; /* Ajusta la altura máxima para dejar espacio a los botones y texto si es necesario */
+        height: auto;
+        cursor: pointer;
+        object-fit: contain; /* Asegura que la imagen se ajuste sin recortarse, manteniendo su proporción */
+      }
+      .botones-navegacion {
+        position: fixed;
+        top: 50%;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        width: calc(100% - 40px); /* Ajusta el ancho considerando el margen */
+      }
+      button {
+        background: none;
+        border: none;
+        font-size: 4em; /* Tamaño de las flechas */
+        cursor: pointer;
+        color: #4a5568; /* Color de las flechas */
+        padding: 10px;
+        user-select: none; /* Evita la selección de texto al hacer clic */
+      }
+      #anterior,
+      #siguiente {
+        font-size: 3em;
+        padding: 15px;
+        
+      }
+      button:hover {
+        color: #14d62a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="pagina1" class="pagina visible">
+      <img
+        id="imagen1"
+        src="img/imgEspacio/espacio1.jpeg"
+        alt="Imagen de la página 1"
+        class="imagen-con-sonido"
+        data-sonido="sonido1.mp3"
+      />
+    </div>
+
+    <div id="pagina2" class="pagina">
+      <img
+        id="imagen2"
+        src="img/imgEspacio/espacio2.jpeg"
+        alt="Imagen de la página 2"
+        class="imagen-con-sonido"
+        data-sonido="sounds/sonidoConejo2.wav"
+      />
+    </div>
+    <div id="pagina3" class="pagina">
+      <img
+        id="imagen3"
+        src="img/imgEspacio/espacio3.jpeg"
+        alt="Imagen de la página 3"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/espacioDespegue.wav"
+      />
+    </div>
+    <div id="pagina4" class="pagina">
+      <img
+        id="imagen4"
+        src="img/imgEspacio/espacio4.jpeg"
+        alt="Imagen de la página 4"
+        class="imagen-con-sonido"
+        data-sonido="sounds/sonidoConejo4.wav"
+      />
+    </div>
+    <div id="pagina5" class="pagina">
+      <img
+        id="imagen5"
+        src="img/imgEspacio/espacio5.jpeg"
+        alt="Imagen de la página 5"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/espacioSilencio.wav"
+      />
+    </div>
+    <div id="pagina6" class="pagina">
+      <img
+        id="imagen6"
+        src="img/imgEspacio/espacio6.jpeg"
+        alt="Imagen de la página 6"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/Codigo morse - Efecto de sonido (HD).mp3"
+      />
+    </div>
+    <div id="pagina7" class="pagina">
+      <img
+        id="imagen7"
+        src="img/imgEspacio/espacio7.jpeg"
+        alt="Imagen de la página 7"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/Meteor Whoosh and Explosion  Free Sound Effect.mp3"
+      />
+    </div>
+    <div id="pagina8" class="pagina">
+      <img
+        id="imagen8"
+        src="img/imgEspacio/espacio8.jpeg"
+        alt="Imagen de la página 8"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/Codigo morse - Efecto de sonido (HD).mp3"
+      />
+    </div>
+    <div id="pagina9" class="pagina">
+      <img
+        id="imagen9"
+        src="img/imgEspacio/espacio9.jpeg"
+        alt="Imagen de la página 9"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/green alien cat says yaer aegh erya.mp3"
+      />
+    </div>
+    <div id="pagina10" class="pagina">
+      <img
+        id="imagen10"
+        src="img/imgEspacio/espacio10.jpeg"
+        alt="Imagen de la página 10"
+        class="imagen-con-sonido"
+        data-sonido="sonido10.mp3"
+      />
+    </div>
+    <div id="pagina11" class="pagina">
+      <img
+        id="imagen11"
+        src="img/imgEspacio/espacio11.jpeg"
+        alt="Imagen de la página 11"
+        class="imagen-con-sonido"
+        data-sonido="sounds/espacioSonidos/espacioDespegue.wav"
+      />
+    </div>
+    <div id="pagina12" class="pagina">
+      <img
+        id="imagen12"
+        src="img/imgEspacio/espacio12.jpeg"
+        alt="Imagen de la página 12"
+        class="imagen-con-sonido"
+        data-sonido="sonido12.mp3"
+      />
+    </div>
+
+    <div class="botones-navegacion">
+      <button id="anterior">←</button>
+      <button id="siguiente">→</button>
+    </div>
+
+    <script>
+      // JavaScript actualizado para pausar el sonido
+    </script>
+  </body>
+</html>
